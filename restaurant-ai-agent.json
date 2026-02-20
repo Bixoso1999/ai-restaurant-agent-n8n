@@ -1,0 +1,431 @@
+{
+  "name": "RestauranteBotwhats copy",
+  "nodes": [
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0e30e588-16fc-4f07-a97d-b6a68dc2fd93",
+              "name": "idConversa",
+              "value": "={{ $json.body.phone }}",
+              "type": "string"
+            },
+            {
+              "id": "e1ba3990-4820-4594-a8a6-a01ce472df67",
+              "name": "Mensagem",
+              "value": "={{ $json.body.text.message }}",
+              "type": "string"
+            },
+            {
+              "id": "1037e52f-9274-490e-9d87-c77fb5fa24a5",
+              "name": "Nome",
+              "value": "={{ $json.body.chatName }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        224,
+        0
+      ],
+      "id": "1490ace3-b8c6-4946-8700-56ebf0061de6",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('Edit Fields').item.json.Mensagem }}",
+        "options": {
+          "systemMessage": "Você é o ChefBot, assistente virtual oficial do restaurante Sabor & Brasa, localizado na Rua Ceará, Pituba – Salvador, Bahia.\n\nSeu único objetivo é:\n- Apresentar o cardápio\n- Registrar pedidos\n- Coletar informações obrigatórias\n- Confirmar pedido\n\n==================================================\nCARDÁPIO OFICIAL\n==================================================\n\nPratos principais:\n- Hambúrguer Artesanal – R$ 32\n- Filé de Frango Grelhado – R$ 38\n- Lasanha à Bolonhesa – R$ 42\n- Risoto de Cogumelos – R$ 45\n\nExtras:\n- Batata Frita – R$ 18\n- Salada da Casa – R$ 22\n\nBebidas:\n- Refrigerante – R$ 8\n- Suco Natural – R$ 12\n- Água – R$ 6\n\nSobremesas:\n- Brownie com Sorvete – R$ 20\n- Pudim da Casa – R$ 16\n\n==================================================\nCOMPORTAMENTO OBRIGATÓRIO\n==================================================\n\n1. SEMPRE que a conversa iniciar, mostre o cardápio completo antes de qualquer outra coisa.\n\n2. Após mostrar o cardápio, pergunte:\n\"Qual prato você deseja pedir? 🍽️\"\n\n3. Quando o cliente informar os itens:\n- Confirme os itens escolhidos com valores\n- Pergunte o nome do cliente, caso ainda não tenha sido informado\n\n4. Após receber o nome:\n- Solicite o endereço completo para entrega 📍\n\n5. Após validar o endereço:\n- Solicite a forma de pagamento:\n  - PIX\n  - Cartão\n  - Dinheiro 💳\n\n6. Após receber a forma de pagamento:\n- Mostre um resumo completo contendo:\n  - Nome\n  - Itens escolhidos\n  - Valores individuais\n  - Forma de pagamento\n  - Endereço completo\n- Pergunte obrigatoriamente:\n\"Deseja confirmar o pedido? ✅\"\n\n\n==================================================\nVALIDAÇÃO OBRIGATÓRIA DE ENDEREÇO\n==================================================\n\nO restaurante atende exclusivamente na cidade de Salvador – Bahia.\nNão é necessário solicitar cidade e estado.\n\nO endereço só é considerado válido se contiver obrigatoriamente:\n\n- Nome da rua\n- Número do imóvel\n- Bairro\n- Número do apartamento (caso seja prédio)\n\nSe o cliente morar em casa, deve confirmar que não há apartamento.\n\nSe qualquer uma dessas informações estiver faltando,\nNÃO avance para a próxima etapa.\n\nSe faltar qualquer informação, responda exatamente:\n\n\"Para finalizar seu pedido, preciso do endereço completo contendo:\nRua, número do imóvel, bairro e número do apartamento (caso seja prédio) 📍\"\n\nSomente após receber todas essas informações corretamente,\navance para a forma de pagamento.\n\n==================================================\nREGRAS IMPORTANTES\n==================================================\n\n- Nunca pule etapas.\n- Nunca finalize pedido sem:\n  nome + endereço válido + pagamento + confirmação explícita.\n- Nunca aceite endereço incompleto.\n- Nunca responda assuntos fora do restaurante.\n- Se perguntarem algo fora do contexto, responda:\n  \"Posso ajudar apenas com pedidos do restaurante Sabor & Brasa 😊\"\n- Seja simpático e use emojis moderadamente.\n\n\n\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        624,
+        0
+      ],
+      "id": "3a40ad6a-b43f-4c42-bfc2-e897ac3218cb",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": "llama-3.1-8b-instant",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        544,
+        192
+      ],
+      "id": "98d676f8-e3e0-4ab5-81c4-14727455abfc",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "FGSk5RkFJKrpi67z",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Edit Fields').item.json.idConversa }}",
+        "contextWindowLength": 10
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        688,
+        192
+      ],
+      "id": "8952ee41-d8a1-4c77-97f9-abfa75a0f67d",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.toolCalculator",
+      "typeVersion": 1,
+      "position": [
+        832,
+        192
+      ],
+      "id": "e9bed329-b564-4760-bee3-955d201ca8e4",
+      "name": "Calculator"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "Receber_mensagem_zapi",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -176,
+        0
+      ],
+      "id": "74bfbcab-7c29-42a7-aae3-678b267b4e39",
+      "name": "Webhook",
+      "webhookId": "0070c3ed-d156-495d-b58f-b9d853e01461"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "e9f003a9-1845-469e-a86a-046c66aa53d6",
+              "leftValue": "={{ $json.body.isGroup }}",
+              "rightValue": false,
+              "operator": {
+                "type": "boolean",
+                "operation": "false",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "d122c85f-afb9-473b-b207-5259bee8b00d",
+              "leftValue": "={{ $json.body.isNewsletter }}",
+              "rightValue": false,
+              "operator": {
+                "type": "boolean",
+                "operation": "false",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "0804ac83-505e-4396-a629-92ab925b252b",
+              "leftValue": "={{ $json.body.broadcast }}",
+              "rightValue": false,
+              "operator": {
+                "type": "boolean",
+                "operation": "false",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "570f6ac5-c630-46df-9830-cad7613a6649",
+              "leftValue": "={{ $json.body.fromApi }}",
+              "rightValue": false,
+              "operator": {
+                "type": "boolean",
+                "operation": "false",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        32,
+        0
+      ],
+      "id": "0ac71ac8-8daf-4b95-8b2e-92cb1f8b8a1c",
+      "name": "If"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        224,
+        192
+      ],
+      "id": "968fb614-994a-457e-a26b-140578be4b25",
+      "name": "No Operation, do nothing"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1YULhdRG6SOlbCPuwqrUNZFqeDEHTU3H9xE-bMEkw9Is",
+          "mode": "list",
+          "cachedResultName": "n8n",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1YULhdRG6SOlbCPuwqrUNZFqeDEHTU3H9xE-bMEkw9Is/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1935372571,
+          "mode": "list",
+          "cachedResultName": "Case2",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1YULhdRG6SOlbCPuwqrUNZFqeDEHTU3H9xE-bMEkw9Is/edit#gid=1935372571"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Whatsapp": "={{ $json.idConversa }}",
+            "Nome": "={{ $json.Nome }}"
+          },
+          "matchingColumns": [
+            "Whatsapp"
+          ],
+          "schema": [
+            {
+              "id": "Nome",
+              "displayName": "Nome",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Whatsapp",
+              "displayName": "Whatsapp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        416,
+        0
+      ],
+      "id": "18f6011f-051f-4d6b-83b2-4c4eb5fd144c",
+      "name": "Append or update row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "GTPerKEN6Pjlesy1",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        1184,
+        0
+      ],
+      "id": "36751055-6239-4ea6-9ec4-9427212d6a57",
+      "name": "No Operation, do nothing1"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.z-api.io/instances/YOUR_INSTANCE_ID/token/YOUR_API_TOKEN/send-text",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "client-token",
+              "value": "YOUR_CLIENT_TOKEN"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "phone",
+              "value": "={{ $('Edit Fields').item.json.idConversa }}"
+            },
+            {
+              "name": "message",
+              "value": "={{ $json.output }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        976,
+        0
+      ],
+      "id": "e74cb476-359c-423b-aa20-2b96a26dde6a",
+      "name": "HTTP Request"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Append or update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calculator": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append or update row in sheet": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "8246f5ef-064e-46e1-bf0e-1294b479ca6e",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "c52afa9cb910cbfd9f6e3a2bbf611294f778705af3f0b30741b7d7568364ae4f"
+  },
+  "id": "cI251EBjhj777k21",
+  "tags": []
+}
