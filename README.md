@@ -10,7 +10,6 @@ AI-powered restaurant ordering automation built using n8n, LLM integration and W
 - Structured order collection
 - Address validation logic
 - Automatic total calculation
-- Delivery time estimation
 - WhatsApp API integration
 - Memory-enabled AI assistant
 
